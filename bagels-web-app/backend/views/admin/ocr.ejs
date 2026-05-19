@@ -1,0 +1,90 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search scanned merchant or bill vendor">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Scanned Transactions</h3>
+    <span><%= transactions.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Preview</th>
+        <th>User</th>
+        <th>Extracted Data</th>
+        <th>Saved</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (transactions.length === 0) { %>
+        <tr><td colspan="4" class="empty-cell">No OCR transactions found.</td></tr>
+      <% } %>
+      <% transactions.forEach((transaction) => { %>
+        <tr>
+          <td>
+            <% if (transaction.receiptUrl) { %>
+              <a href="/uploads/receipts/<%= transaction.receiptUrl %>" target="_blank" rel="noreferrer">Open receipt</a>
+            <% } else { %>
+              --
+            <% } %>
+          </td>
+          <td><%= transaction.userId?.email || '--' %></td>
+          <td>
+            <div><strong><%= transaction.vendorName %></strong></div>
+            <small><%= transaction.category %> · <%= helpers.formatCurrency(helpers.toNumber(transaction.amount), transaction.currency || 'INR') %></small>
+            <% if (transaction.meta?.note) { %>
+              <div><small><%= transaction.meta.note %></small></div>
+            <% } %>
+          </td>
+          <td><%= helpers.formatDateTime(transaction.createdAt) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Bill Receipts</h3>
+    <span><%= bills.length %> loaded</span>
+  </div>
+  <table class="data-table compact">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Vendor</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Receipt</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (bills.length === 0) { %>
+        <tr><td colspan="5" class="empty-cell">No bill receipts found.</td></tr>
+      <% } %>
+      <% bills.forEach((bill) => { %>
+        <tr>
+          <td><%= bill.userId?.email || '--' %></td>
+          <td><%= bill.vendorName %></td>
+          <td><%= bill.billType %></td>
+          <td><%= helpers.formatCurrency(helpers.toNumber(bill.billAmount)) %></td>
+          <td>
+            <% if (bill.receipt) { %>
+              <a href="<%= bill.receipt %>" target="_blank" rel="noreferrer">Open receipt</a>
+            <% } else { %>
+              --
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

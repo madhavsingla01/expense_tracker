@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters grid">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search merchant, category, note, txn id">
+    <input type="text" name="user" value="<%= filters.user %>" placeholder="Filter by user email or phone">
+    <input type="date" name="start" value="<%= filters.start %>">
+    <input type="date" name="end" value="<%= filters.end %>">
+    <button type="submit">Apply</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Transactions</h3>
+    <span><%= transactions.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>User</th>
+        <th>Merchant</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (transactions.length === 0) { %>
+        <tr><td colspan="7" class="empty-cell">No transactions match the current filters.</td></tr>
+      <% } %>
+      <% transactions.forEach((transaction) => { %>
+        <tr>
+          <td><%= helpers.formatDateTime(transaction.date) %></td>
+          <td><%= transaction.userId?.email || '--' %></td>
+          <td>
+            <div><%= transaction.vendorName %></div>
+            <% if (transaction.meta?.note) { %>
+              <small><%= transaction.meta.note %></small>
+            <% } %>
+          </td>
+          <td><%= transaction.category %></td>
+          <td><span class="pill <%= transaction.type %>"><%= transaction.type %></span></td>
+          <td><%= helpers.formatCurrency(helpers.toNumber(transaction.amount), transaction.currency || 'INR') %></td>
+          <td><%= transaction.source %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

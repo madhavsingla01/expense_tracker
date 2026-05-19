@@ -1,0 +1,52 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search merchant, normalized name, category">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Merchant List</h3>
+    <span><%= merchants.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Normalized</th>
+        <th>Usage</th>
+        <th>Last Used</th>
+        <th>Manual Category Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (merchants.length === 0) { %>
+        <tr><td colspan="5" class="empty-cell">No merchants found.</td></tr>
+      <% } %>
+      <% merchants.forEach((merchant) => { %>
+        <tr>
+          <td>
+            <div><%= merchant.name %></div>
+            <% if (merchant.alternateNames?.length) { %>
+              <small><%= merchant.alternateNames.slice(0, 3).join(', ') %></small>
+            <% } %>
+          </td>
+          <td><code><%= merchant.normalizedName %></code></td>
+          <td><%= merchant.usageCount || 0 %></td>
+          <td><%= helpers.formatDateTime(merchant.lastUsedAt) %></td>
+          <td>
+            <form method="post" action="/admin/merchants/<%= merchant._id %>" class="inline-form">
+              <input type="text" name="category" value="<%= merchant.category %>" placeholder="Category">
+              <button type="submit">Save</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

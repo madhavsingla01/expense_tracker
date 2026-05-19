@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %> | CASH CLAIR Admin</title>
+  <link rel="stylesheet" href="/public/admin.css">
+</head>
+<body>
+  <div class="admin-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-kicker">CASH CLAIR</span>
+        <h1>Admin</h1>
+        <p>Internal EJS console</p>
+      </div>
+      <nav class="nav">
+        <a href="/admin" class="<%= activeNav === 'dashboard' ? 'active' : '' %>">Dashboard</a>
+        <a href="/admin/users" class="<%= activeNav === 'users' ? 'active' : '' %>">Users</a>
+        <a href="/admin/transactions" class="<%= activeNav === 'transactions' ? 'active' : '' %>">Transactions</a>
+        <a href="/admin/merchants" class="<%= activeNav === 'merchants' ? 'active' : '' %>">Merchants</a>
+        <a href="/admin/ai" class="<%= activeNav === 'ai' ? 'active' : '' %>">AI Control</a>
+        <a href="/admin/ocr" class="<%= activeNav === 'ocr' ? 'active' : '' %>">OCR Monitor</a>
+        <a href="/admin/imports" class="<%= activeNav === 'imports' ? 'active' : '' %>">Statement Imports</a>
+        <a href="/admin/feedback" class="<%= activeNav === 'feedback' ? 'active' : '' %>">Feedback</a>
+        <a href="/admin/logs" class="<%= activeNav === 'logs' ? 'active' : '' %>">Logs</a>
+      </nav>
+      <div class="sidebar-foot">
+        <div>Signed in as <strong><%= adminUser?.username || 'admin' %></strong></div>
+        <div>Basic auth protected</div>
+      </div>
+    </aside>
+    <main class="content">
+      <header class="page-head">
+        <div>
+          <p class="page-kicker">Admin Surface</p>
+          <h2><%= pageTitle %></h2>
+        </div>
+      </header>

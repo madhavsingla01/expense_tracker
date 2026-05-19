@@ -1,0 +1,59 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search email, phone, or name">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Users</h3>
+    <span><%= users.length %> results</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>KYC</th>
+        <th>Transactions</th>
+        <th>Volume</th>
+        <th>Created</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (users.length === 0) { %>
+        <tr><td colspan="6" class="empty-cell">No users found.</td></tr>
+      <% } %>
+      <% users.forEach((user) => { %>
+        <tr>
+          <td>
+            <div class="user-cell">
+              <% if (user.profile?.avatar) { %>
+                <img class="avatar" src="<%= user.profile.avatar %>" alt="">
+              <% } else {
+                const fullName = [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ');
+                const initials = (fullName || user.email || '?').split(/\s|@/).filter(Boolean).map((part) => part[0]).join('').toUpperCase().slice(0, 2);
+              %>
+                <span class="avatar fallback"><%= initials || '?' %></span>
+              <% } %>
+              <div>
+                <a href="/admin/users/<%= user._id %>"><%= user.email %></a>
+                <small><%= [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ') || 'Unnamed user' %></small>
+              </div>
+            </div>
+          </td>
+          <td><%= user.phoneNumber || '--' %></td>
+          <td><span class="pill <%= user.kycStatus %>"><%= user.kycStatus %></span></td>
+          <td><%= user.transactionCount %></td>
+          <td><%= helpers.formatCurrency(user.transactionVolume, user.profile?.currency || 'INR') %></td>
+          <td><%= helpers.formatDateTime(user.createdAt) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

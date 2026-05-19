@@ -1,0 +1,51 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search file, parser, status">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Bank Statement Imports</h3>
+    <span><%= imports.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>User</th>
+        <th>Status</th>
+        <th>Summary</th>
+        <th>Imported</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (imports.length === 0) { %>
+        <tr><td colspan="5" class="empty-cell">No imports found.</td></tr>
+      <% } %>
+      <% imports.forEach((item) => { %>
+        <tr>
+          <td>
+            <div><%= item.fileName %></div>
+            <small><%= item.parser || item.fileType || '--' %></small>
+          </td>
+          <td><%= item.userId?.email || '--' %></td>
+          <td><span class="pill <%= item.status %>"><%= item.status %></span></td>
+          <td>
+            <small>
+              <%= item.summary?.created || 0 %> created,
+              <%= item.summary?.duplicates || 0 %> duplicates,
+              <%= item.summary?.failed || 0 %> failed
+            </small>
+          </td>
+          <td><%= helpers.formatDateTime(item.createdAt) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

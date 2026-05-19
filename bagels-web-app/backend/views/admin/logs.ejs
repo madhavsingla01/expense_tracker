@@ -1,0 +1,48 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <select name="status">
+      <option value="" <%= !filters.status ? 'selected' : '' %>>All statuses</option>
+      <option value="success" <%= filters.status === 'success' ? 'selected' : '' %>>Success</option>
+      <option value="failure" <%= filters.status === 'failure' ? 'selected' : '' %>>Failure</option>
+    </select>
+    <button type="submit">Apply</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Recent Logs</h3>
+    <span><%= logs.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>When</th>
+        <th>Status</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Resource</th>
+        <th>Error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (logs.length === 0) { %>
+        <tr><td colspan="6" class="empty-cell">No logs found.</td></tr>
+      <% } %>
+      <% logs.forEach((log) => { %>
+        <tr>
+          <td><%= helpers.formatDateTime(log.createdAt) %></td>
+          <td><span class="pill <%= log.status %>"><%= log.status %></span></td>
+          <td><%= log.userId?.email || '--' %></td>
+          <td><%= log.action %></td>
+          <td><%= [log.resourceType, log.resourceId].filter(Boolean).join(': ') || '--' %></td>
+          <td><%= log.errorMessage || '--' %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

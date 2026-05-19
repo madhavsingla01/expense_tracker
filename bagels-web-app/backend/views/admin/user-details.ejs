@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<section class="panel-grid two-col">
+  <article class="panel">
+    <div class="panel-head">
+      <h3>User Profile</h3>
+      <a href="/admin/users">Back to users</a>
+    </div>
+    <div class="profile-summary">
+      <% if (user.profile?.avatar) { %>
+        <img class="avatar large" src="<%= user.profile.avatar %>" alt="">
+      <% } else {
+        const fullName = [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ');
+        const initials = (fullName || user.email || '?').split(/\s|@/).filter(Boolean).map((part) => part[0]).join('').toUpperCase().slice(0, 2);
+      %>
+        <span class="avatar large fallback"><%= initials || '?' %></span>
+      <% } %>
+      <div>
+        <strong><%= [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ') || 'Unnamed user' %></strong>
+        <small><%= user.email %></small>
+      </div>
+    </div>
+    <dl class="meta-grid">
+      <div><dt>Email</dt><dd><%= user.email %></dd></div>
+      <div><dt>Phone</dt><dd><%= user.phoneNumber || '--' %></dd></div>
+      <div><dt>Name</dt><dd><%= [user.profile?.firstName, user.profile?.lastName].filter(Boolean).join(' ') || '--' %></dd></div>
+      <div><dt>KYC</dt><dd><span class="pill <%= user.kycStatus %>"><%= user.kycStatus %></span></dd></div>
+      <div><dt>Devices</dt><dd><%= user.auth?.devices?.length || 0 %></dd></div>
+      <div><dt>Saved Contacts</dt><dd><%= user.savedContacts?.length || 0 %></dd></div>
+      <div><dt>Currency</dt><dd><%= user.profile?.currency || 'INR' %></dd></div>
+      <div><dt>Joined</dt><dd><%= helpers.formatDateTime(user.createdAt) %></dd></div>
+    </dl>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Recent User Logs</h3>
+    </div>
+    <table class="data-table compact">
+      <thead>
+        <tr>
+          <th>Action</th>
+          <th>Status</th>
+          <th>When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (auditLogs.length === 0) { %>
+          <tr><td colspan="3" class="empty-cell">No logs for this user.</td></tr>
+        <% } %>
+        <% auditLogs.forEach((log) => { %>
+          <tr>
+            <td><%= log.action %></td>
+            <td><span class="pill <%= log.status %>"><%= log.status %></span></td>
+            <td><%= helpers.formatDateTime(log.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>User Transactions</h3>
+    <span><%= transactions.length %> loaded</span>
+  </div>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Merchant</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (transactions.length === 0) { %>
+        <tr><td colspan="5" class="empty-cell">No transactions for this user.</td></tr>
+      <% } %>
+      <% transactions.forEach((transaction) => { %>
+        <tr>
+          <td><%= helpers.formatDateTime(transaction.date) %></td>
+          <td><%= transaction.vendorName %></td>
+          <td><%= transaction.category %></td>
+          <td><span class="pill <%= transaction.type %>"><%= transaction.type %></span></td>
+          <td><%= helpers.formatCurrency(helpers.toNumber(transaction.amount), transaction.currency || 'INR') %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</section>
+
+<%- include('partials/footer') %>

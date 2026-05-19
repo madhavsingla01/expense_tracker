@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String         @id @default(uuid())
+  mongoUserId       String?        @unique @map("mongo_user_id")
+  email             String         @unique
+  name              String
+  firstName         String?        @map("first_name")
+  lastName          String?        @map("last_name")
+  phone             String?
+  preferredCurrency String         @default("INR") @map("preferred_currency")
+  avatarUrl         String?        @map("avatar_url")
+  avatarPublicId    String?        @map("avatar_public_id")
+  emailVerified     Boolean        @default(false) @map("email_verified")
+  kycStatus         String         @default("pending") @map("kyc_status")
+  createdAt         DateTime       @default(now()) @map("created_at")
+  updatedAt         DateTime       @updatedAt @map("updated_at")
+  uploadedFiles     UploadedFile[]
+
+  @@map("users")
+}
+
+model UploadedFile {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cloudinaryPublicId String   @unique @map("cloudinary_public_id")
+  url                String
+  secureUrl          String?  @map("secure_url")
+  resourceType       String   @default("image") @map("resource_type")
+  format             String?
+  bytes              Int?
+  width              Int?
+  height             Int?
+  folder             String?
+  originalName       String?  @map("original_name")
+  mimeType           String?  @map("mime_type")
+  uploadType         String   @default("profile_avatar") @map("upload_type")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([uploadType])
+  @@map("uploaded_files")
+}

@@ -1,0 +1,74 @@
+<%- include('partials/header') %>
+
+<section class="panel">
+  <form method="get" class="filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search user, input, category, or pattern">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<section class="panel-grid two-col">
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Learned Patterns</h3>
+      <span><%= patterns.length %> loaded</span>
+    </div>
+    <table class="data-table compact">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Input</th>
+          <th>Auto Category</th>
+          <th>Confidence</th>
+          <th>Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (patterns.length === 0) { %>
+          <tr><td colspan="5" class="empty-cell">No learned patterns found.</td></tr>
+        <% } %>
+        <% patterns.forEach((pattern) => { %>
+          <tr>
+            <td><%= pattern.userId?.email || '--' %></td>
+            <td><code><%= pattern.input %></code></td>
+            <td><%= pattern.predictedCategory %></td>
+            <td><%= Number(pattern.confidence || 0).toFixed(2) %></td>
+            <td><%= pattern.timesUsed || 0 %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Learning Rules</h3>
+      <span><%= rules.length %> loaded</span>
+    </div>
+    <table class="data-table compact">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Pattern</th>
+          <th>Category</th>
+          <th>Count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (rules.length === 0) { %>
+          <tr><td colspan="4" class="empty-cell">No learning rules found.</td></tr>
+        <% } %>
+        <% rules.forEach((rule) => { %>
+          <tr>
+            <td><%= rule.userId?.email || '--' %></td>
+            <td><code><%= rule.payeePattern %></code></td>
+            <td><%= rule.category %></td>
+            <td><%= rule.count || 0 %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </article>
+</section>
+
+<%- include('partials/footer') %>

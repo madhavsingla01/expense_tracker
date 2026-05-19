@@ -1,0 +1,89 @@
+<%- include('partials/header') %>
+
+<section class="stats-grid">
+  <article class="stat-card">
+    <span>Total users</span>
+    <strong><%= stats.userCount %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Total transactions</span>
+    <strong><%= stats.transactionCount %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Total volume</span>
+    <strong><%= helpers.formatCurrency(stats.totalVolume) %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Today's activity</span>
+    <strong><%= stats.todayCount %> txns</strong>
+    <small><%= helpers.formatCurrency(stats.todayVolume) %></small>
+  </article>
+  <article class="stat-card">
+    <span>Pending feedback</span>
+    <strong><%= stats.pendingFeedbackCount %></strong>
+    <a href="/admin/feedback">Review inbox</a>
+  </article>
+</section>
+
+<section class="panel-grid two-col">
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Today's Transactions</h3>
+      <a href="/admin/transactions">Open full view</a>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Merchant</th>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (todayTransactions.length === 0) { %>
+          <tr><td colspan="5" class="empty-cell">No activity today.</td></tr>
+        <% } %>
+        <% todayTransactions.forEach((transaction) => { %>
+          <tr>
+            <td><%= transaction.userId?.email || 'Unknown' %></td>
+            <td><%= transaction.vendorName %></td>
+            <td><span class="pill <%= transaction.type %>"><%= transaction.type %></span></td>
+            <td><%= helpers.formatCurrency(helpers.toNumber(transaction.amount), transaction.currency || 'INR') %></td>
+            <td><%= helpers.formatDateTime(transaction.date || transaction.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </article>
+
+  <article class="panel">
+    <div class="panel-head">
+      <h3>Recent Logs</h3>
+      <a href="/admin/logs">See all logs</a>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Action</th>
+          <th>User</th>
+          <th>When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% recentLogs.forEach((log) => { %>
+          <tr>
+            <td><span class="pill <%= log.status %>"><%= log.status %></span></td>
+            <td><%= log.action %></td>
+            <td><%= log.userId?.email || 'System' %></td>
+            <td><%= helpers.formatDateTime(log.createdAt) %></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </article>
+</section>
+
+<%- include('partials/footer') %>

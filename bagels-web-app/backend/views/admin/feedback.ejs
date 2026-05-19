@@ -1,0 +1,113 @@
+<%- include('partials/header') %>
+
+<section class="stats-grid">
+  <article class="stat-card">
+    <span>Pending</span>
+    <strong><%= statusCounts.pending || 0 %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Reviewed</span>
+    <strong><%= statusCounts.reviewed || 0 %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Loaded</span>
+    <strong><%= feedbacks.length %></strong>
+  </article>
+  <article class="stat-card">
+    <span>Sort</span>
+    <strong class="stat-text"><%= filters.sort === 'oldest' ? 'Oldest' : 'Newest' %></strong>
+  </article>
+</section>
+
+<section class="panel">
+  <form method="get" class="filters feedback-filters">
+    <input type="text" name="q" value="<%= filters.q %>" placeholder="Search message, type, user">
+    <select name="status">
+      <option value="" <%= !filters.status ? 'selected' : '' %>>All statuses</option>
+      <option value="pending" <%= filters.status === 'pending' ? 'selected' : '' %>>Pending</option>
+      <option value="reviewed" <%= filters.status === 'reviewed' ? 'selected' : '' %>>Reviewed</option>
+    </select>
+    <select name="category">
+      <option value="" <%= !filters.category ? 'selected' : '' %>>All types</option>
+      <% ['general', 'bug', 'feature', 'payment', 'import', 'mobile', 'account', 'other'].forEach((category) => { %>
+        <option value="<%= category %>" <%= filters.category === category ? 'selected' : '' %>><%= category %></option>
+      <% }) %>
+    </select>
+    <select name="sort">
+      <option value="newest" <%= filters.sort !== 'oldest' ? 'selected' : '' %>>Newest first</option>
+      <option value="oldest" <%= filters.sort === 'oldest' ? 'selected' : '' %>>Oldest first</option>
+    </select>
+    <button type="submit">Apply</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-head">
+    <h3>Feedback Inbox</h3>
+    <span><%= feedbacks.length %> loaded</span>
+  </div>
+  <div class="table-wrap">
+    <table class="data-table feedback-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Type</th>
+          <th>Message</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (feedbacks.length === 0) { %>
+          <tr><td colspan="6" class="empty-cell">No feedback matches the current filters.</td></tr>
+        <% } %>
+        <% feedbacks.forEach((feedback) => {
+          const fullName = [feedback.user?.profile?.firstName, feedback.user?.profile?.lastName].filter(Boolean).join(' ');
+          const initials = (fullName || feedback.user?.email || '?').split(/\s|@/).filter(Boolean).map((part) => part[0]).join('').toUpperCase().slice(0, 2);
+        %>
+          <tr>
+            <td>
+              <div class="user-cell">
+                <% if (feedback.user?.profile?.avatar) { %>
+                  <img class="avatar" src="<%= feedback.user.profile.avatar %>" alt="">
+                <% } else { %>
+                  <span class="avatar fallback"><%= initials || '?' %></span>
+                <% } %>
+                <div>
+                  <div><%= fullName || 'Unnamed user' %></div>
+                  <small><%= feedback.user?.email || '--' %></small>
+                </div>
+              </div>
+            </td>
+            <td><span class="pill <%= feedback.category %>"><%= feedback.category %></span></td>
+            <td class="message-cell">
+              <div><%= feedback.message %></div>
+              <% if (feedback.metadata?.page) { %>
+                <small>Page: <%= feedback.metadata.page %></small>
+              <% } %>
+            </td>
+            <td><span class="pill <%= feedback.status %>"><%= feedback.status %></span></td>
+            <td>
+              <%= helpers.formatDateTime(feedback.createdAt) %>
+              <% if (feedback.reviewedAt) { %>
+                <small>Reviewed <%= helpers.formatDateTime(feedback.reviewedAt) %></small>
+              <% } %>
+            </td>
+            <td>
+              <% if (feedback.status !== 'reviewed') { %>
+                <form method="post" action="/admin/feedback/<%= feedback._id %>/review" class="inline-form">
+                  <button type="submit">Mark reviewed</button>
+                </form>
+              <% } else { %>
+                <span class="muted">Done</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
