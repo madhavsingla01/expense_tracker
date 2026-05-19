@@ -2,7 +2,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 async function migrate() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/bagels', {
+  await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/bagels', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });

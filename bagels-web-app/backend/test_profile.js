@@ -3,7 +3,7 @@ const UserService = require('./services/UserService');
 const User = require('./models/User');
 require('dotenv').config();
 
-mongoose.connect('mongodb://127.0.0.1/bagels').then(async () => {
+mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1/bagels').then(async () => {
   try {
     const user = await User.findOne();
     if (!user) {
